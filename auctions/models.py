@@ -3,14 +3,11 @@ from django.db import models
 
 
 class User(AbstractUser):
-    id = models.AutoField(primary_key=True)
-
     def __str__(self):
         return self.username
 
 
 class Listing(models.Model):
-    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=64)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     created = models.DateTimeField(auto_now_add=True)
@@ -20,7 +17,6 @@ class Listing(models.Model):
 
 
 class Bid(models.Model):
-    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     offer = models.DecimalField(max_digits=6, decimal_places=2)
@@ -30,7 +26,6 @@ class Bid(models.Model):
 
 
 class Comment(models.Model):
-    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     content = models.CharField(max_length=250)
