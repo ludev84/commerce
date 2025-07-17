@@ -8,8 +8,18 @@ class User(AbstractUser):
 
 
 class Listing(models.Model):
+    class Category(models.TextChoices):
+        ELECTRONICS = "electronics", "Electronics"
+        FASHION = "fashion", "Fashion"
+        HOME = "home", "Home"
+        TOYS = "toys", "Toys"
+
     title = models.CharField(max_length=64)
     price = models.DecimalField(max_digits=6, decimal_places=2)
+    category = models.CharField(
+        max_length=64,
+        choices=Category,
+    )
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

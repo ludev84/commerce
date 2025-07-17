@@ -1,0 +1,13 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <h2>{{ listing.title }}</h2>
+
+    <h3>Price</h3>
+    <p>${{ listing.price }} MXN</p>
+
+    <h3>Category</h3>
+    <p>{{ listing.get_category_display }}</p>
+
+{% endblock %}
