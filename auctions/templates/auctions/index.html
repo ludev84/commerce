@@ -5,5 +5,20 @@
 
     <h2>Active Listings</h2>
 
-    TODO
+    {% for listing in listings %}
+
+        <h3>{{ listing.title }}</h3>
+
+        <p></p><b>Price: </b>{{ listing.price }}</p>
+
+        <p></p><b>Category: </b>{{ listing.get_category_display }}</p>
+
+        <hr>
+
+    {% empty %}
+
+        <h3>No listings</h3>
+
+    {% endfor %}
+
 {% endblock %}
