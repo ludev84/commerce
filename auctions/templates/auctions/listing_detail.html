@@ -1,0 +1,26 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <h2>{{ listing.title }}</h2>
+
+    <h3>Price</h3>
+    <p>${{ listing.price }} MXN</p>
+
+    <h3>Category</h3>
+    <p>{{ listing.get_category_display }}</p>
+
+    {% if user.is_authenticated %}
+    <form action="{% url 'toggle_watchlist' listing.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">
+            {% if is_in_watchlist %}
+                Remove from Watchlist 💔
+            {% else %}
+                Add to Watchlist ❤️
+            {% endif %}
+        </button>
+    </form>
+{% endif %}
+
+{% endblock %}

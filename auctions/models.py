@@ -3,6 +3,8 @@ from django.db import models
 
 
 class User(AbstractUser):
+    watchlist = models.ManyToManyField("Listing", blank=True, related_name="watchers")
+
     def __str__(self):
         return self.username
 
@@ -43,11 +45,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user.username}"
-
-
-class Watchlist(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.listing}"

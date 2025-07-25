@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.forms import ModelForm
 from django.contrib.auth.decorators import login_required
@@ -75,11 +75,36 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-@login_required
-def listing(request, id):
+# @login_required
+# def listing(request, id):
+#     return render(
+#         request, "auctions/listing.html", {"listing": Listing.objects.get(pk=id)}
+#     )
+
+
+def listing_detail(request, listing_id):
+    listing = get_object_or_404(Listing, pk=listing_id)
+    # Add this check to pass to the template
+    is_in_watchlist = False
+    if request.user.is_authenticated:
+        is_in_watchlist = listing in request.user.watchlist.all()
+
     return render(
-        request, "auctions/listing.html", {"listing": Listing.objects.get(pk=id)}
+        request,
+        "auctions/listing_detail.html",
+        {
+            "listing": listing,
+            "is_in_watchlist": is_in_watchlist,  # Pass the boolean to the template
+            # ... other context variables
+        },
     )
+
+
+@login_required
+def view_watchlist(request):
+    # Get all listings from the user's watchlist
+    watched_listings = request.user.watchlist.all()
+    return render(request, "auctions/watchlist.html", {"listings": watched_listings})
 
 
 @login_required
@@ -104,5 +129,19 @@ def new(request):
 
 
 @login_required
-def add_watchlist(request, id):
-    
+def toggle_watchlist(request, listing_id):
+    # Ensure the method is POST for security
+    if request.method == "POST":
+        listing = get_object_or_404(Listing, pk=listing_id)
+        user = request.user
+
+        # Check if the listing is already in the user's watchlist
+        if listing in user.watchlist.all():
+            # If it is, remove it
+            user.watchlist.remove(listing)
+        else:
+            # If it's not, add it
+            user.watchlist.add(listing)
+
+    # Redirect back to the listing's page
+    return redirect("listing_detail", listing_id=listing_id)
