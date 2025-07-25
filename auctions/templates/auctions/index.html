@@ -7,9 +7,9 @@
 
     {% for listing in listings %}
 
-        <h3>{{ listing.title }}</h3>
+        <h3><a href="{% url 'listing' listing.id %}">{{ listing.title }}</a></h3>
 
-        <p></p><b>Price: </b>{{ listing.price }}</p>
+        <p></p><b>Price: </b>${{ listing.price }} MXN</p>
 
         <p></p><b>Category: </b>{{ listing.get_category_display }}</p>
 

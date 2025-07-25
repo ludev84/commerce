@@ -14,6 +14,7 @@ class Listing(models.Model):
         HOME = "home", "Home"
         TOYS = "toys", "Toys"
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     title = models.CharField(max_length=64)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     category = models.CharField(
@@ -42,3 +43,11 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user.username}"
+
+
+class Watchlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.listing}"

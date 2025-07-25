@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.forms import ModelForm
+from django.contrib.auth.decorators import login_required
 
 from .models import User, Listing
 
@@ -74,12 +75,14 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
+@login_required
 def listing(request, id):
     return render(
         request, "auctions/listing.html", {"listing": Listing.objects.get(pk=id)}
     )
 
 
+@login_required
 def new(request):
     # TODO: Add validations
     if request.method == "POST":
@@ -98,3 +101,8 @@ def new(request):
         return render(
             request, "auctions/new.html", {"newListingForm": newListingForm()}
         )
+
+
+@login_required
+def add_watchlist(request, id):
+    
