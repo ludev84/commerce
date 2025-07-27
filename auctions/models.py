@@ -32,10 +32,11 @@ class Listing(models.Model):
 class Bid(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    offer = models.DecimalField(max_digits=6, decimal_places=2)
+    new_bid = models.DecimalField(max_digits=6, decimal_places=2)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} offers {self.offer} dollars for {self.listing}."
+        return f"{self.user.username} offers {self.new_bid} dollars for {self.listing}."
 
 
 class Comment(models.Model):

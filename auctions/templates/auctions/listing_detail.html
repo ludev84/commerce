@@ -5,22 +5,32 @@
     <h2>{{ listing.title }}</h2>
 
     <h3>Price</h3>
-    <p>${{ listing.price }} MXN</p>
+    <p>Current Price: <strong>${{ highest_bid|default:listing.price }}</strong></p>
+    {% if error_message %}
+        <div class="alert alert-danger">{{ error_message }}</div>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <form action="{% url 'listing_detail' listing.id %}" method="POST">
+        {% csrf_token %}
+        {{ bid_form }}  <button type="submit" class="btn btn-primary">Place Bid</button>
+    </form>
+    {% endif %}
 
     <h3>Category</h3>
     <p>{{ listing.get_category_display }}</p>
 
     {% if user.is_authenticated %}
-    <form action="{% url 'toggle_watchlist' listing.id %}" method="POST">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary">
-            {% if is_in_watchlist %}
-                Remove from Watchlist 💔
-            {% else %}
-                Add to Watchlist ❤️
-            {% endif %}
-        </button>
-    </form>
-{% endif %}
+        <form action="{% url 'toggle_watchlist' listing.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">
+                {% if is_in_watchlist %}
+                    Remove from Watchlist 💔
+                {% else %}
+                    Add to Watchlist ❤️
+                {% endif %}
+            </button>
+        </form>
+    {% endif %}
 
 {% endblock %}
