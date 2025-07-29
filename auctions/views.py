@@ -106,6 +106,8 @@ def listing_detail(request, listing_id):
             # Check if bid is valid
             if bid_amount > current_price:
                 new_bid = Bid(user=request.user, listing=listing, new_bid=bid_amount)
+                listing.current_price = bid_amount
+                listing.save()
                 new_bid.save()
                 return redirect("listing_detail", listing_id=listing_id)
             else:
@@ -131,8 +133,12 @@ def listing_detail(request, listing_id):
 def close_listing(request, listing_id):
     if request.method == "POST":
         listing = get_object_or_404(Listing, pk=listing_id)
+        highest_bid = listing.bid_set.all().aggregate(Max("new_bid"))["new_bid__max"]
+        winner_bid = Bid.objects.filter(listing=listing, new_bid=highest_bid).first()
+
         if request.user == listing.user:
             listing.status = listing.Status.CLOSED
+            listing.winner = winner_bid.user
             listing.save()
             return redirect("index")
     # TODO: Handle exceptions
@@ -154,7 +160,11 @@ def new(request):
         category = request.POST["category"]
 
         new_listing = Listing(
-            user=request.user, title=title, price=price, category=category
+            user=request.user,
+            title=title,
+            price=price,
+            current_price=price,
+            category=category,
         )
         new_listing.save()
         return render(

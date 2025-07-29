@@ -6,6 +6,8 @@
 
         <h1>Listing Closed</h1>
 
+        {% if user.is_authenticated and user == listing.winner %} <strong>Winner: </strong>{{ listing.winner }} {% endif %}
+
     {% else %}
 
         <h2>{{ listing.title }}</h2>

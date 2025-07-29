@@ -24,7 +24,9 @@ class Listing(models.Model):
     title = models.CharField(max_length=64)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     current_price = models.DecimalField(max_digits=6, decimal_places=2, null=True)
-    current_winner = models.ForeignKey(User, null=True)
+    winner = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="current_winner"
+    )
     category = models.CharField(
         max_length=64,
         choices=Category,
