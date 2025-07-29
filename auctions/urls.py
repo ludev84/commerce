@@ -16,4 +16,9 @@ urlpatterns = [
         views.toggle_watchlist,
         name="toggle_watchlist",
     ),
+    path(
+        "listing/close/<int:listing_id>",
+        views.close_listing,
+        name="close_listing",
+    ),
 ]

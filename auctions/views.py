@@ -24,7 +24,11 @@ class BidForm(forms.Form):
 
 
 def index(request):
-    return render(request, "auctions/index.html", {"listings": Listing.objects.all()})
+    return render(
+        request,
+        "auctions/index.html",
+        {"listings": Listing.objects.filter(status=Listing.Status.ACTIVE)},
+    )
 
 
 def login_view(request):
@@ -83,13 +87,6 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-# @login_required
-# def listing(request, id):
-#     return render(
-#         request, "auctions/listing.html", {"listing": Listing.objects.get(pk=id)}
-#     )
-
-
 def listing_detail(request, listing_id):
     listing = get_object_or_404(Listing, pk=listing_id)
     highest_bid = listing.bid_set.all().aggregate(Max("new_bid"))["new_bid__max"]
@@ -131,6 +128,17 @@ def listing_detail(request, listing_id):
 
 
 @login_required
+def close_listing(request, listing_id):
+    if request.method == "POST":
+        listing = get_object_or_404(Listing, pk=listing_id)
+        if request.user == listing.user:
+            listing.status = listing.Status.CLOSED
+            listing.save()
+            return redirect("index")
+    # TODO: Handle exceptions
+
+
+@login_required
 def view_watchlist(request):
     # Get all listings from the user's watchlist
     watched_listings = request.user.watchlist.all()
@@ -145,7 +153,9 @@ def new(request):
         price = request.POST["price"]
         category = request.POST["category"]
 
-        new_listing = Listing(title=title, price=price, category=category)
+        new_listing = Listing(
+            user=request.user, title=title, price=price, category=category
+        )
         new_listing.save()
         return render(
             request,
