@@ -3,6 +3,8 @@
 {% block body %}
     <h2>My Watchlist</h2>
 
+    <br>
+
     {% for listing in listings %}
         <div class="listing-item">
             <h3><a href="{% url 'listing_detail' listing.id %}">{{ listing.title }}</a></h3>

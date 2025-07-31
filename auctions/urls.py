@@ -22,4 +22,6 @@ urlpatterns = [
         name="close_listing",
     ),
     path("comment/<int:listing_id>", views.add_comment, name="add_comment"),
+    path("categories", views.categories, name="categories"),
+    path("category/<str:category_value>", views.category, name="category"),
 ]

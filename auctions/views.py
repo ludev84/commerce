@@ -33,7 +33,7 @@ def index(request):
     return render(
         request,
         "auctions/index.html",
-        {"listings": Listing.objects.filter(status=Listing.Status.ACTIVE)},
+        {"listings": Listing.objects.filter(status="Active")},
     )
 
 
@@ -222,3 +222,22 @@ def add_comment(request, listing_id):
             new_comment.save()
             return redirect("listing_detail", listing_id=listing_id)
     # TODO: Exceptions
+
+
+def categories(request):
+    categories_list = Listing.Category
+    return render(
+        request,
+        "auctions/categories.html",
+        {"categories": categories_list},
+    )
+
+
+def category(request, category_value):
+    listings = Listing.objects.filter(category=category_value, status="Active")
+    category_label = category_value.capitalize()
+    return render(
+        request,
+        "auctions/category_detail.html",
+        {"listings": listings, "category": category_label},
+    )

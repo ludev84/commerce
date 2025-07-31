@@ -4,6 +4,8 @@
 
     <h2>Add new listing</h2>
 
+    <br>
+
     <form action="{% url 'new' %}" method="post">
         {% csrf_token %}
         {{ newListingForm }}
