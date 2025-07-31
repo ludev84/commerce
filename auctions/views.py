@@ -153,6 +153,7 @@ def close_listing(request, listing_id):
             listing.save()
             return redirect("index")
     # TODO: Handle exceptions
+    # TODO: Remove from users' watchlist when a Listing is closed
 
 
 @login_required
