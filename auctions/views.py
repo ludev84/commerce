@@ -8,13 +8,19 @@ from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.decorators import login_required
 
-from .models import User, Listing, Bid
+from .models import User, Listing, Bid, Comment
 
 
 class newListingForm(ModelForm):
     class Meta:
         model = Listing
         fields = ["title", "price", "category"]
+
+
+class CommentForm(ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["content"]
 
 
 class BidForm(forms.Form):
@@ -89,6 +95,7 @@ def register(request):
 
 def listing_detail(request, listing_id):
     listing = get_object_or_404(Listing, pk=listing_id)
+    comments = Comment.objects.filter(listing=listing)
     highest_bid = listing.bid_set.all().aggregate(Max("new_bid"))["new_bid__max"]
     # If there are no bids, the starting price is the current price
     current_price = round(highest_bid, 2) if highest_bid is not None else listing.price
@@ -115,6 +122,7 @@ def listing_detail(request, listing_id):
 
     # For a GET request, create a fresh form
     bid_form = BidForm()
+    comment_form = CommentForm()
 
     return render(
         request,
@@ -122,6 +130,8 @@ def listing_detail(request, listing_id):
         {
             "listing": listing,
             "bid_form": bid_form,
+            "comment_form": comment_form,
+            "comments": comments,
             "highest_bid": current_price,
             "is_in_watchlist": is_in_watchlist,
             "error_message": error_message,
@@ -138,7 +148,8 @@ def close_listing(request, listing_id):
 
         if request.user == listing.user:
             listing.status = listing.Status.CLOSED
-            listing.winner = winner_bid.user
+            if winner_bid is not None:
+                listing.winner = winner_bid.user
             listing.save()
             return redirect("index")
     # TODO: Handle exceptions
@@ -195,3 +206,18 @@ def toggle_watchlist(request, listing_id):
 
     # Redirect back to the listing's page
     return redirect("listing_detail", listing_id=listing_id)
+
+
+@login_required
+def add_comment(request, listing_id):
+    if request.method == "POST":
+        listing = get_object_or_404(Listing, pk=listing_id)
+
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            content = form.cleaned_data["content"]
+            new_comment = Comment(user=request.user, listing=listing, content=content)
+            new_comment.save()
+            return redirect("listing_detail", listing_id=listing_id)
+    # TODO: Exceptions

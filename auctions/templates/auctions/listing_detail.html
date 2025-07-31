@@ -6,7 +6,11 @@
 
         <h1>Listing Closed</h1>
 
-        {% if user.is_authenticated and user == listing.winner %} <strong>Winner: </strong>{{ listing.winner }} {% endif %}
+        {% if user.is_authenticated and user == listing.winner %}
+
+            <p>Congratulations,  <strong>{{ listing.winner }}</strong>, you won this auction.</p>
+            
+        {% endif %}
 
     {% else %}
 
@@ -46,6 +50,34 @@
                     {% endif %}
                 </button>
             </form>
+
+        {% endif %}
+
+        {% if user.is_authenticated %}
+
+            <!-- Comments -->
+            <hr>
+            <h3>Add a new comment</h3>
+            
+            <form action="{% url 'add_comment' listing.id %}" method="post">
+                {% csrf_token %}
+                {{ comment_form }} <button type="submit" class="btn btn-primary">Add comment</button>
+            </form>
+
+            <br>
+            <h3>Comments</h3>
+
+            {% for comment in comments %}
+
+                <hr>
+                <p><strong>{{ comment.user }}: </strong>{{ comment.content }}</p>
+                <hr>
+
+            {% empty %}
+            
+                <p>There are no comments.</p>
+
+            {% endfor %}
 
         {% endif %}
 
